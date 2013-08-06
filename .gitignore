@@ -6,3 +6,4 @@ config.yaml
 .ruby-gemset
 .ruby-version
 .sass-cache/
+public/bundle*

@@ -471,9 +471,9 @@ if Location.count(:name => 'Steindl') <= 0
   Location.create(:name => 'Cocos', :category => 'Chinese', :url => '', :enabled => "on")
   Location.create(:name => 'McDonalds', :category => 'Fast Food', :url => 'http://www.mcdonalds.at', :enabled => "on")
   Location.create(:name => 'Macas', :category => 'Fast Food', :url => '', :enabled => "on")
-  Location.create(:name => 'LaDonnaInes', :category => 'Restaurant', :url => '', :disabled => "on")
-  Location.create(:name => 'KFC', :category => 'Fast Food', :url => 'http://www.kfc.co.at/', :disabled => "")
-  Location.create(:name => 'BurgerKing', :category => 'Fast Food', :url => 'http://www.burgerking.at', :disabled => "")
+  Location.create(:name => 'LaDonnaInes', :category => 'Restaurant', :url => '', :enabled => "on")
+  Location.create(:name => 'KFC', :category => 'Fast Food', :url => 'http://www.kfc.co.at/', :enabled => "")
+  Location.create(:name => 'BurgerKing', :category => 'Fast Food', :url => 'http://www.burgerking.at', :enabled => "")
   Location.create(:name => 'Dots', :category => 'Restaurant', :url => '', :enabled => "")
   Location.create(:name => 'Monosushi', :category => 'Chinese', :url => '', :enabled => "")
 

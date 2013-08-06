@@ -1,0 +1,31 @@
+pagetitle: '#meal voting'
+pagedesc: 'mealvoting for systems'
+
+session_secret: 'change this!'
+
+# Database Configuration
+# for adapter 'mysql' set keys host, username, password
+# database and encoding
+database:
+    adapter: 'sqlite3'
+    database: './dbmeal.db'
+    encoding: 'utf8'
+
+pagespeed: true
+
+# environment dependent configuration, merged based on env
+production:
+  session_secret: 'change this!'
+
+  pagespeed: true
+
+  session_secret: 'change this!'
+
+development:
+  pagetitle: 'the dev mealpage'
+  pagedesc: 'meals collected by a lonely developer'
+
+  session_secret: 'all i want is rack'
+
+  datamapper_logger: :debug # show sql queries for debugging
+  pagespeed: false

@@ -466,7 +466,7 @@ if Location.count(:name => 'Steindl') <= 0
   Location.create(:name => 'Vapiano', :category => 'Restaurant', :url => 'http://www.vapiano.at/', :enabled => "on")
   Location.create(:name => 'Yummy', :category => 'Chinese', :url => '', :enabled => "on") 
   Location.create(:name => 'Pizzeria', :category => 'Restaurant', :url => '', :enabled => "on")
-  Location.create(:name => 'NamNam', :category => 'Indian', :url => '', :enabled => "on") 
+  Location.create(:name => 'Mirchi', :category => 'Indian', :url => '', :enabled => "on") 
   Location.create(:name => 'Grieche', :category => 'Restaurant', :url => '', :enabled => "on")
   Location.create(:name => 'Cocos', :category => 'Chinese', :url => '', :enabled => "on")
   Location.create(:name => 'McDonalds', :category => 'Fast Food', :url => 'http://www.mcdonalds.at', :enabled => "on")

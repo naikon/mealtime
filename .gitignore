@@ -1,6 +1,5 @@
 *.db
 Gemfile.lock
-views/menu_*
 *.swp
 .bundle
 config.yaml

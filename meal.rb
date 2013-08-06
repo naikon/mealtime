@@ -173,7 +173,7 @@ get '/' do
   
   @option1 = Option.first(:value => 2)
   @option2 = Option.first(:value => 1)
-  @option3 = Option.first(:value => -2)
+  @option3 = Option.first(:value => -1)
   @option4 = Option.first(:value => 0)
 
   if Ballot.count(:created_at.gte => Date.today, :dm_user_id => current_user.id) > 0
@@ -480,7 +480,7 @@ if Location.count(:name => 'Steindl') <= 0
 
   Option.create(:name => 'Want', :value => 2)
   Option.create(:name => 'OK', :value => 1)
-  Option.create(:name => 'No Way', :value => -2)
+  Option.create(:name => 'No Way', :value => -1)
   Option.create(:name => 'Maybe', :value => 0)
 end
  

@@ -1,0 +1,25 @@
+%form{ :action => "/location/#{@location.id}/edit", :method => "post", :class => 'formbox auth' }
+  %fieldset
+    %ol
+      %li
+        %label{ :for => "location_category" } category:
+        %input{ :id => "location_category", :name => "category", :size => 30, :type => "text", :value => @location.category }
+      %li
+        %label{ :for => "location_name" } name:
+        %input{ :id => "location_name", :name => "name", :size => 30, :type => "text", :value => @location.name }
+      %li
+        %label{ :for => "location_url" } enter a URL of location (optional):
+        %input{ :id => "location_url", :name => "url", :size => 30, :type => "text", :value => @location.url}
+      %li
+        %label{ :for => "location_description" } description (optional): 
+        %input{ :id => "location_description", :name => "description", :size => 30, :type => "text", :value => @location.description }
+        .form_info This is optional, it is publicly visible in location overview.
+      %li
+        %label{ :for => "location_enabled" } availability:
+        - if @location.enabled == "on" 
+          %input{ :id => "location_enabled", :name => "enabled", :type => "checkbox", :checked => "checked"}
+        - if @location.enabled != "on"
+          %input{ :id => "location_enabled", :name => "enabled", :type => "checkbox"} 
+        .form_info This enables and disables the location in the voting list.
+      %li.last
+        %input{ :value => "Update", :type => "submit" }

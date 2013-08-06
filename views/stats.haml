@@ -1,0 +1,36 @@
+%script{ :src => '/js/flotr2.min.js' }
+- # %script{ :src => '/js/raphael-min.js' }
+- # %script{ :src => '/js/g.raphael-min.js' }
+- # %script{ :src => '/js/g.bar-min.js' }
+- # %script{ :src => '/js/g.line-min.js' }
+- # %script{ :src => '/js/g.pie-min.js' }
+%script{ :src => '/js/zeitgeist_stats.js' }
+
+#content
+
+  .textbox
+
+    %h2 Statistics
+
+    %h3 
+      =  @title
+
+    %table
+      %tbody
+        %tr
+          %th Total Locations
+          %td= @stats[:locations]
+        %tr
+          %th Registered Users
+          %td= @stats[:users]  
+        %tr
+          %th Total submited Ballots
+          %th= @stats[:ballots]
+
+    %h3 Points by Location
+
+    #items_users_stats
+      #items_users_stats_holder
+
+    - # %h3 Points per User
+

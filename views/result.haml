@@ -1,0 +1,48 @@
+#content
+
+  .textbox
+    %h2
+      = @title
+    %p 
+      Displays the final voting from all users sorted by location for today (#{@today})
+  </br>
+
+  .locationbox
+
+ 
+    %table#resulttable.table.table-condensed.tablesorter
+      %thead
+        %tr
+          -# = %th
+            -# = .content #
+          %th.name
+            Name
+          %th.count
+            Sum
+          %th.count
+            Pros
+          %th.count
+            NoGos
+          - @users.each do |user|
+            %th.name
+              #{user.username} 
+      %tbody
+        - cnt = 1
+        - @ballots.each do |ballot|
+          - start = 0
+          %tr
+            -# = %td
+              -# = #{cnt}
+            %td
+              #{ballot.name}
+            %td
+              #{ballot.sum}
+            - cnt += 1
+            %td
+              #{ballot.pros}
+            %td
+              #{ballot.nogos}
+            - @users.each do |user| 
+              %td
+                #{@results[start][cnt-2]}
+                -start += 1

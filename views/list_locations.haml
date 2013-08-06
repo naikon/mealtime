@@ -1,0 +1,52 @@
+#content
+
+  .textbox
+    %h2
+      = @title
+    %p 
+      Displays all availabe locations. You can edit and delete existing locations.
+    %p
+      Enable and Disable locations to display or hide them in the voting table.
+  </br>
+
+  .locationbox
+  
+    %table.table.table-condensed
+      %thead
+        %tr
+          %th
+            .content #
+          %th
+            Category
+          %th
+            Name
+          %th
+            Description 
+          %th
+            URL
+          - if logged_in?
+            %th
+              Action
+      %tbody
+        - cnt = 1
+        - @locations.each do |location|
+          %tr
+            %td
+              - cnt = cnt + 1 - 1
+              #{cnt}
+            %td
+              #{location.category}
+            %td
+              #{location.name}
+            %td
+              #{location.description}
+            %td
+              %a{:href => '%s' % location.url} #{location.url}
+            %td
+              - if logged_in? 
+                %a{:href => '/location/%d/edit' % location.id } Edit
+                %form.delete{ :action => "/delete", :method => 'post' }
+                  %input{ :type => 'hidden', :name => 'id', :value => "#{location.id}" }
+                  %input{ :type => 'hidden', :name => 'return_to', :value => request.fullpath }
+                  %input.tagpush{ :type => 'submit', :value => 'X' }
+            - cnt += 1

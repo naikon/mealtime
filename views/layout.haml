@@ -1,0 +1,59 @@
+!!!
+%html
+  %head
+    %meta{ :charset => 'utf-8' }
+    %title
+      &= @title || settings.pagetitle
+    %link{ :rel => 'stylesheet', :href => '/css/bootstrap.min.css' }
+    %link{ :rel => 'stylesheet', :href => '/stylesheet.css' }
+    %link{ :rel => 'stylesheet', :href => '/css/styles.css' }
+
+    %script{ :src => '/js/jquery-1.7.2.js' }
+    %script{ :src => '/js/ui/jquery-ui-1.8.21.custom.js' }
+
+    %script{ :src => '/js/livequery.js' }
+    %script{ :src => '/js/form.js' }
+    %script{ :src => '/js/expander.js' }
+    %script{ :src => '/js/easing.js' }
+    %script{ :src => '/js/jquery.scrollintoview.js' }
+
+    %script{ :src => '/js/jquery.isotope.js' }
+    %script{ :src => '/js/masonry_centered.js' }
+    %script{ :src => '/js/jquery.infinitescroll.js' }
+
+    %script{ :src => '/js/jquery.mousewheel.js' }
+
+    %script{ :src => '/fancybox/jquery.fancybox.js' }
+
+    %script{ :src => '/js/zeitgeist.js' }
+
+    %script{ :src => '/js/jquery.tablesorter.js' }
+    %script{ :src => '/js/meal_tablesort.js' }
+ 
+  %body
+    - if flash[:error]
+      %div{ :class => 'error message' }
+        %p
+          = h flash[:error]
+    - if flash[:notice]
+      %div{ :class => 'success message' }
+        %p
+          = h flash[:notice]
+        %div#dump
+    #sitenav
+      %a{:href => '/new'} Add
+      |
+      %a{:href => '/locations'} Locations
+      |
+      - if logged_in?
+        %a{:href => '/logout' } Logout
+        |
+        %a{:href => '/users/%d/edit' % current_user.id } Edit Profile
+      - else
+        %a{:href => '/login'} Login
+    = partial(:_header)
+    #wrapper
+      = partial(:_navigation)
+      = yield
+      %div.clear
+      = partial(:_footer)

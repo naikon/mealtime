@@ -1,0 +1,13 @@
+%nav
+  - if logged_in?
+    %a{:href => '/result'} Result
+    %br
+  %a{:href => '/new'} Add
+  &#124;
+  %a{:href => '/locations'} Locations
+  &#124;
+  %a{:href => '/stats'} Stats
+  &#124;
+  %a{:href => '/menu'} Menu
+  %br
+  %a{:href => '/about'} About/Contact

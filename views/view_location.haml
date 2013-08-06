@@ -1,0 +1,32 @@
+#content
+
+  .textbox
+    %h2
+      = @title
+    %p 
+      Displays in detail the location.
+  </br>
+
+  .locationbox
+  
+    %table.table.table-condensed
+      %thead
+        %tr
+          %th
+            .content #
+          %th
+            Category
+          %th
+            Name
+          %th
+            Description 
+      %tbody
+        %tr
+          %td
+            #{@location.category}
+          %td
+            #{@location.name}
+          %td
+            #{@location.description}
+          %td
+            %a{:href => '%s' % @location.url} #{@location.url}

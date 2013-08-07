@@ -202,6 +202,7 @@ end
 # public stats and diagrams
 get '/stats' do
   @title = "#{settings.pagetitle} in total numbers"
+  @user = "#{current_user.username}"
 
   # some stats in numbers
   # the rest is loaded from stats.json
@@ -217,19 +218,44 @@ end
 get '/stats.json' do
   logger.debug 'Generating stats json object'
 
+  def count_by(id)
+    counts = []
+    if sqlite_adapter?
+      sql = 'select l.name as date, sum(v.value) AS count from votes as v, ballots as b, dm_users as u, locations as l where v.ballot_id = b.id and u.id = b.dm_user_id and l.id = v.location_id and u.id = %s group by l.name' %id
+    end
+    res = raw_sql(sql)
+    logger.debug('Generate stats with custom SQL returned %d results.' % res.length)
+    res.each do |row|
+      counts << [row.date, row.count]
+    end
+    return counts
+  end
+
+  if logged_in?
+    user_single = count_by(current_user.id)
+  end
+
   # location statistics
   user_stats = []
     Location.all(:enabled => 'on', :order => [:name]).each do | location |
     name = location.name
     count = raw_sql "SELECT SUM(value) AS sum FROM votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and l.id = #{location.id};"
+    logger.debug('Generate stats with custom SQL returned %d results.' % count.length)
     user_stats << [name, count[0].to_i] if count[0].to_i > 0
   end
 
-  content_type :json
-  {
-    :user => user_stats
-  }.to_json
-
+  if logged_in?
+    content_type :json
+    {
+      :user => user_stats,
+      :user_single => user_single
+    }.to_json
+  else
+    content_type :json
+    {
+      :user => user_stats
+    }.to_json
+  end
 end
 
 #add new location

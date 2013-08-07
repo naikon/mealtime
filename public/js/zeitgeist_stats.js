@@ -161,28 +161,69 @@ $(function () {
     });
   };
 
+  var draw_user_submissions_single = function (id, user) {
+    var container = document.getElementById(id),
+      data = [], labels = [];
+
+    for (var i = 0; i < user.length; i++) {
+      data.push([i, user[i][1]]);
+      labels.push(user[i][0]);
+    }
+    Flotr.draw(container,
+      [ data ],
+      { 
+        bars : {
+          show : true,
+          horizontal: false
+        },
+        mouse : {
+          track : true,
+          relative : true,
+          trackFormatter: function (point) {
+            return Math.round(point.y) + ' Points';
+          }
+        },
+        xaxis: {
+          noTicks: labels.length,
+          tickFormatter: function (x) {
+            var i = parseInt(x);
+            if (labels[i]) {
+              var html = labels[i];
+              if (html != '?') {
+                html = escape(html);
+                html = '<a href="/location/'+html+'">'+html+'</a>';
+              }
+              return html;
+            }
+            return '';
+          }
+        },
+        yaxis : {
+          min : 0,
+          autoscaleMargin : 1
+        }
+    });
+  };
+
   $.getJSON('/stats.json', function (data, textStatus, jqXHR) {
     if (textStatus != 'success') {
       console.log('error with json data: ' + textStatus);
       return;
     }
 
-    //var items_image = data.image,
-        //items_video = data.video,
-        //items_audio = data.audio,
-        //per_day = data.days,
-        //per_month = data.months,
-        //per_year = data.years,
-    var user = data.user;
+
+    var	user = data.user,
+				user_single = data.user_single;
 
     // draw the pie chart for item types
     //draw_type_pie('items_piechart_holder', items_image, items_video, items_audio);
 
-    // timeline graph that shows the number of posted items:
-    //draw_type_time('items_stats_holder', per_day, per_month, per_year);
-    
     // barchart of user submissions
     draw_user_submissions('items_users_stats_holder', user);
+
+    // timeline graph that shows the number of posted items:
+    draw_user_submissions_single('items_stats_holder', user_single);
+    
   });
 });
 

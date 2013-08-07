@@ -177,7 +177,7 @@ get '/' do
   @option4 = Option.first(:value => 0)
 
   if Ballot.count(:created_at.gte => Date.today, :dm_user_id => current_user.id) > 0
-    flash[:notice] = "YOU has already voted, limit for today is reached!"
+    flash[:notice] = "YOU have already voted, limit for today is reached!"
       redirect '/result'
   else
     haml :index
@@ -376,7 +376,7 @@ get '/result' do
 
   #select sum pres and nogos for location
   if sqlite_adapter?
-    sql = 'SELECT l.name, location_id, SUM(value) as sum, sum(case when value >= 2 then 1 else 0 end) as pros, sum(case when value = -2 then 1 else 0 end) as nogos FROM votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now") GROUP BY v.location_id ORDER BY l.name'
+    sql = 'SELECT l.name, location_id, SUM(value) as sum, sum(case when value >= 2 then 1 else 0 end) as pros, sum(case when value = -1 then 1 else 0 end) as nogos FROM votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now") GROUP BY v.location_id ORDER BY l.name'
   end
   
   @today = Date.today

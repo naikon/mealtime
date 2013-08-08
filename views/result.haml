@@ -39,14 +39,16 @@
               #{ballot.sum}
             - cnt += 1
             - if ballot.pros >= 1
-              %td.pros
-                #{ballot.pros}
+              %td 
+                %span.label.label-success
+                  #{ballot.pros}
             - else
               %td
                 #{ballot.pros}
             - if ballot.nogos >= 1
-              %td.nogos
-                #{ballot.nogos}
+              %td
+                %span.label.label-important
+                  #{ballot.nogos}
             - else
               %td
                 #{ballot.nogos}

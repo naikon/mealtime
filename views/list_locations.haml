@@ -6,7 +6,7 @@
     %p 
       Displays all availabe locations. You can edit and delete existing locations.
     %p
-      Enable and Disable locations to display or hide them in the voting table.
+      Enable and Disable locations to display or hide them in the voting table. But do this before the first user votes
   </br>
 
   .locationbox
@@ -24,6 +24,8 @@
             Description 
           %th
             URL
+          %th
+            Available
           - if logged_in?
             %th
               Action
@@ -42,6 +44,11 @@
               #{location.description}
             %td
               %a{:href => '%s' % location.url} #{location.url}
+            %td
+              - if location.enabled == "on"
+                yes
+              - else
+                no
             %td
               - if logged_in? 
                 %a{:href => '/location/%d/edit' % location.id } Edit

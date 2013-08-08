@@ -179,6 +179,7 @@ get '/' do
   if Ballot.count(:created_at.gte => Date.today, :dm_user_id => current_user.id) > 0
     flash[:notice] = "YOU have already voted, limit for today is reached!"
       redirect '/result'
+      haml :index
   else
     haml :index
   end
@@ -316,11 +317,27 @@ post '/location/:id/edit' do
   raise "location with id #{params[:id]} not found!" if not location
 
   if logged_in?
+
+    #get ballots for today    
+    if sqlite_adapter?
+      sql = 'select count(*) FROM ballots as b where strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now")'
+    end
+    @result = raw_sql sql
+    logger.debug('Generate stats with custom SQL returned %d results.' % @result.length)
+
+    #get actual enabled value, because a change in a running vote is not allowed
+    if location.enabled != params[:enabled]
+      if @result.length != 0
+        flash[:error] = "Sorry voting for today is already in progress, do your updates tommorrow morning!"
+          redirect '/locations'
+      end     
+    end
+
     location.update(:category => params[:category], :name => params[:name], :description => params[:description], :url => params[:url], :enabled => params[:enabled])
     flash[:notice] = "Location ##{params[:id]} updated."
       redirect '/locations' 
   else
-    flash[:notice] = "Something went wron with location ##{params[:id]}."
+    flash[:notice] = "Something went wrong with location ##{params[:id]}."
       redirect '/locations'
   end
  
@@ -358,6 +375,29 @@ post '/vote' do
     #if !res.empty?
       flash[:notice] = "YOU has already voted, limit for today is reached!"
       redirect '/result'
+    end
+
+    #some checks for cheaters ;)
+    params.values.each do |v|
+      logger.info(v)
+      if v.to_i > 2 or v.to_i < -1
+        flash[:error] = "Uppps dont to this again!"
+          redirect '/'
+      end    
+    end
+
+    #check max nogos
+    count = 0
+    params.values.each do |v|
+      if v.to_i == -1
+        count=count+1
+      end
+    end
+
+    
+    if count > settings.max_nogos.to_i
+      flash[:error] = "Only #{settings.max_nogos} nogos allowed!"
+        redirect '/'
     end
 
     @locations = Location.all(:enabled => "on", :order => [:name.asc])

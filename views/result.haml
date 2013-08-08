@@ -38,10 +38,18 @@
             %td
               #{ballot.sum}
             - cnt += 1
-            %td
-              #{ballot.pros}
-            %td
-              #{ballot.nogos}
+            - if ballot.pros >= 1
+              %td.pros
+                #{ballot.pros}
+            - else
+              %td
+                #{ballot.pros}
+            - if ballot.nogos >= 1
+              %td.nogos
+                #{ballot.nogos}
+            - else
+              %td
+                #{ballot.nogos}
             - @users.each do |user| 
               %td
                 #{@results[start][cnt-2]}

@@ -171,15 +171,14 @@ get '/' do
   @title = "make your choice #{settings.pagetitle}"
   @locations = Location.all(:enabled => "on", :order => [:name.asc])
   
-  @option1 = Option.first(:value => 2)
-  @option2 = Option.first(:value => 1)
-  @option3 = Option.first(:value => -1)
-  @option4 = Option.first(:value => 0)
+  @option1 = Option.first(:value => settings.value_want)
+  @option2 = Option.first(:value => settings.value_ok)
+  @option3 = Option.first(:value => settings.value_noway)
+  @option4 = Option.first(:value => settings.value_maybe)
 
   if Ballot.count(:created_at.gte => Date.today, :dm_user_id => current_user.id) > 0
     flash[:notice] = "YOU have already voted, limit for today is reached!"
       redirect '/result'
-      haml :index
   else
     haml :index
   end
@@ -372,15 +371,14 @@ post '/vote' do
     #end
 
     if Ballot.count(:created_at.gte => Date.today, :dm_user_id => current_user.id) > 0
-    #if !res.empty?
-      flash[:notice] = "YOU has already voted, limit for today is reached!"
+      flash[:notice] = "YOU have already voted, limit for today is reached!"
       redirect '/result'
     end
 
     #some checks for cheaters ;)
     params.values.each do |v|
       logger.info(v)
-      if v.to_i > 2 or v.to_i < -1
+      if v.to_i > settings.value_want.to_i or v.to_i < settings.value_noway.to_i
         flash[:error] = "Uppps dont to this again!"
           redirect '/'
       end    
@@ -393,7 +391,6 @@ post '/vote' do
         count=count+1
       end
     end
-
     
     if count > settings.max_nogos.to_i
       flash[:error] = "Only #{settings.max_nogos} nogos allowed!"
@@ -440,7 +437,7 @@ get '/result' do
     end
   end
 
-  #select sum pres and nogos for location
+  #select sum, pros and nogos for location
   if sqlite_adapter?
     sql = 'SELECT l.name, location_id, SUM(value) as sum, sum(case when value >= 2 then 1 else 0 end) as pros, sum(case when value = -1 then 1 else 0 end) as nogos FROM votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now") GROUP BY v.location_id ORDER BY l.name'
   end
@@ -544,10 +541,10 @@ if Location.count(:name => 'Steindl') <= 0
   Location.create(:name => 'Monosushi', :category => 'Chinese', :url => '', :enabled => "")
 
 
-  Option.create(:name => 'Want', :value => 2)
-  Option.create(:name => 'OK', :value => 1)
-  Option.create(:name => 'No Way', :value => -1)
-  Option.create(:name => 'Maybe', :value => 0)
+  Option.create(:name => 'Want', :value => settings.value_want)
+  Option.create(:name => 'OK', :value => settings.value_ok)
+  Option.create(:name => 'No Way', :value => settings.value_noway)
+  Option.create(:name => 'Maybe', :value => settings.value_maybe)
 end
  
 

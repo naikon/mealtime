@@ -13,6 +13,13 @@ database:
 
 pagespeed: true
 
+max_nogos: '3'
+
+value_want:   '2'
+value_ok:     '1'
+value_maybe:  '0'
+value_noway:  '-1'
+
 # environment dependent configuration, merged based on env
 production:
   session_secret: 'change this!'
@@ -20,6 +27,8 @@ production:
   pagespeed: true
 
   session_secret: 'change this!'
+
+  max_nogos: '3'
 
 development:
   pagetitle: 'the dev mealpage'
@@ -29,3 +38,5 @@ development:
 
   datamapper_logger: :debug # show sql queries for debugging
   pagespeed: false
+
+  max_nogos: '3'

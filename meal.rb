@@ -260,8 +260,13 @@ end
 
 #add new location
 get '/new' do
-  @title = "Submit a new location to #{settings.pagetitle}"
-  haml :new_location
+  if logged_in?
+    @title = "Submit a new location to #{settings.pagetitle}"
+    haml :new_location
+  else
+    flash[:notice] = "Login to add new location"
+      redirect '/locations'
+  end
 end
 
 #submits new location
@@ -302,7 +307,7 @@ get '/location/:id/edit' do |id|
   if logged_in?
     @location = Location.get(id)
   else
-		raise 'WHAT Y DOING'
+    raise "location with id #{params[:id]} not found!" if not @location
   end
 
   haml :edit_location 

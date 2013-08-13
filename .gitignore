@@ -7,3 +7,4 @@ config.yaml
 .ruby-version
 .sass-cache/
 public/bundle*
+views/menu_*

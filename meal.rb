@@ -159,6 +159,15 @@ helpers do
     repository(:default).adapter.select(sql)
   end
 
+  def get_special_values
+    sql = 'SELECT l.name, location_id, SUM(value) as sum, sum(case when value >= 2 then 1 else 0 end) as pros, sum(case when value = -1 then 1 else 0 end) as nogos FROM votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now") GROUP BY v.location_id ORDER BY l.name'
+  end
+
+  def get_user_votes_by_location(user_id)
+    sql = 'select v.value FROM dm_users as u, votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now")'
+    sql = sql << "and u.id = b.dm_user_id and u.id = #{user_id} GROUP BY v.location_id order by l.name"
+  end
+
 end
 
 
@@ -444,7 +453,7 @@ get '/result' do
 
   #select sum, pros and nogos for location
   if sqlite_adapter?
-    sql = 'SELECT l.name, location_id, SUM(value) as sum, sum(case when value >= 2 then 1 else 0 end) as pros, sum(case when value = -1 then 1 else 0 end) as nogos FROM votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now") GROUP BY v.location_id ORDER BY l.name'
+    sql = get_special_values
   end
   
   @today = Date.today
@@ -471,6 +480,7 @@ get '/result' do
     if sqlite_adapter?
       sql = 'select v.value FROM dm_users as u, votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now")' 
       sql = sql << "and u.id = b.dm_user_id and u.id = #{user.id} GROUP BY v.location_id order by l.name"
+      sql = get_user_votes_by_location(user.id)
     end
 
     @values = raw_sql sql
@@ -487,6 +497,10 @@ get '/menu' do
   haml :menu
 end
 
+# shows voting for a given day
+get '/result/:date' do
+  date = params[:date]  
+end
 
 get '/favicon.ico' do
   redirect '/images/favicon.png'

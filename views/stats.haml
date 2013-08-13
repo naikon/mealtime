@@ -27,13 +27,13 @@
           %th Total submited Ballots
           %th= @stats[:ballots]
 
-    %h3{:style => 'margin-top: 100px'} Points by Location (sum)
+    %h3{:style => 'margin-top: 20px'} Points by Location (sum)
 
     #items_users_stats
       #items_users_stats_holder
 
     - if logged_in?
-      %h3{:style => 'margin-top: 100px'} Item Submissions by #{@user}
+      %h3{:style => 'margin-top: 20px'} Item Submissions by #{@user}
       #items_stats
         #items_stats_holder
 

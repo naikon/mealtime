@@ -1,9 +1,17 @@
 $(function () {
-  var draw_type_pie = function (id, items_image, items_video, items_audio) {
+  var draw_type_pie = function (id, user_sum) {
+
+    data = [], labels = [];
+
+    for (var i = 0; i < user_sum.length; i++) {
+      data.push({
+				data: [[i,user_sum[i][1]]],
+        label: user_sum[i][0]
+			});
+    }
+
     var graph = Flotr.draw(document.getElementById(id),
-      [ {data: [[0,items_image]], label: 'images'},
-        {data: [[0,items_video]], label: 'videos'},
-        {data: [[0,items_audio]], label: 'audio'} ],
+      data,
       { HtmlText : false,
         shadowSize: 0,
         grid : {
@@ -213,10 +221,11 @@ $(function () {
 
 
     var	user = data.user,
-				user_single = data.user_single;
+				user_single = data.user_single
+        user_sum = data.user_sum;;
 
     // draw the pie chart for item types
-    //draw_type_pie('items_piechart_holder', items_image, items_video, items_audio);
+    draw_type_pie('items_piechart_holder', user_sum);
 
     // barchart of user submissions
     draw_user_submissions('items_users_stats_holder', user);

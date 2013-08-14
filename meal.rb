@@ -244,6 +244,21 @@ get '/stats.json' do
     user_single = count_by(current_user.id)
   end
 
+
+  def user_sum
+    sum = []
+    if sqlite_adapter?
+      sql = 'select u.username as username, sum(v.value) as sum from votes as v, ballots as b, dm_users as u where v.ballot_id = b.id and u.id = b.dm_user_id group by u.id'
+    end
+    res = raw_sql(sql)
+    logger.debug('Generate stats with custom SQL returned %d results.' % res.length)
+    res.each do |row|
+      sum << [row.username, row.sum]
+    end
+    return sum
+  end
+
+
   # location statistics
   user_stats = []
     Location.all(:enabled => 'on', :order => [:name]).each do | location |
@@ -257,12 +272,14 @@ get '/stats.json' do
     content_type :json
     {
       :user => user_stats,
-      :user_single => user_single
+      :user_single => user_single,
+      :user_sum => user_sum
     }.to_json
   else
     content_type :json
     {
-      :user => user_stats
+      :user => user_stats,
+      :user_sum => user_sum
     }.to_json
   end
 end

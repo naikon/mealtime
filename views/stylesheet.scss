@@ -825,8 +825,8 @@ footer {
 
 // stats
 #items_piechart {
-    position: absolute;
-    left: 280px;
+    width: 310px;
+    height: 200px;
     background-color: #f9fff2;
     border: 1px solid #999;
     @include rounded(3px);

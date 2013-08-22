@@ -825,15 +825,15 @@ footer {
 
 // stats
 #items_piechart {
-    width: 310px;
-    height: 200px;
+    width: 360px;
+    height: 250px;
     background-color: #f9fff2;
     border: 1px solid #999;
     @include rounded(3px);
     #items_piechart_holder {
         display: block;
-        width: 310px;
-        height: 200px;
+        width: 360px;
+        height: 250px;
     }
 }
 

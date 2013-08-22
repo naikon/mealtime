@@ -3,39 +3,40 @@
 -# =   %h2
 -# =     Make your choice
 
-
-.box
-  %form{ :action => "/vote", :method => "post", :class => 'votebox' }
-    %table.table.table-condensed
-      %thead
-        %tr
-          %th
-            %span.bold Category 
-          %th
-            %span.bold Name
-          %th{:style=>'text-align: center'}
-            %span.bold #{@option1.name}
-          %th{:style=>'text-align: center'}
-            %span.bold #{@option2.name} 
-          %th{:style=>'text-align: center'}
-            %span.bold #{@option3.name}
-          %th{:style=>'text-align: center'}
-            %span.bold #{@option4.name}
+- if logged_in?
+  .box
+    %form{ :action => "/vote", :method => "post", :class => 'votebox' }
+      %table.table.table-condensed
+        %thead
+          %tr
+            %th
+              %span.bold Category 
+            %th
+              %span.bold Name
+            %th{:style=>'text-align: center'}
+              %span.bold #{@option1.name}
+            %th{:style=>'text-align: center'}
+              %span.bold #{@option2.name} 
+            %th{:style=>'text-align: center'}
+              %span.bold #{@option3.name}
+            %th{:style=>'text-align: center'}
+              %span.bold #{@option4.name}
     
-      %tbody
-        %fieldset      
-          - @locations.each do |location|
-            %tr
-              %td
-                #{location.category}
-              %td
-                #{location.name}
-              %td{:style=>'text-align: center'}
-                %input{:name => "#{location.id}", :type => "radio", :value => @option1.value}
-              %td{:style=>'text-align: center'}
-                %input{:name => "#{location.id}", :type => "radio", :value => @option2.value}
-              %td{:style=>'text-align: center'}
-                %input{:name => "#{location.id}", :type => "radio", :value => @option3.value}
-              %td{:style=>'text-align: center'}
-                %input{:name => "#{location.id}", :type => "radio", :value => @option4.value, :checked => "checked"}
-    %input{ :value => "Vote", :type => "submit", :class => "voteb" }	
+        %tbody
+          %fieldset      
+            - @locations.each do |location|
+              %tr
+                %td
+                  #{location.category}
+                %td
+                  #{location.name}
+                %td{:style=>'text-align: center'}
+                  %input{:name => "#{location.id}", :type => "radio", :value => @option1.value}
+                %td{:style=>'text-align: center'}
+                  %input{:name => "#{location.id}", :type => "radio", :value => @option2.value}
+                %td{:style=>'text-align: center'}
+                  %input{:name => "#{location.id}", :type => "radio", :value => @option3.value}
+                %td{:style=>'text-align: center'}
+                  %input{:name => "#{location.id}", :type => "radio", :value => @option4.value, :checked => "checked"}
+      %input{ :value => "Vote", :type => "submit", :class => "voteb" }	
+

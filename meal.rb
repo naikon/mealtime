@@ -248,12 +248,14 @@ get '/stats.json' do
   def user_sum
     sum = []
     if sqlite_adapter?
-      sql = 'select u.username as username, sum(v.value) as sum from votes as v, ballots as b, dm_users as u where v.ballot_id = b.id and u.id = b.dm_user_id group by u.id order by u.username asc'
+      sql = 'select u.username as username, sum(v.value) as sum from votes as v, ballots as b, dm_users as u where v.ballot_id = b.id and u.id = b.dm_user_id group and by u.id order by u.username asc'
     end
     res = raw_sql(sql)
     logger.debug('Generate stats with custom SQL returned %d results.' % res.length)
     res.each do |row|
-      sum << [row.username, row.sum]
+      if row.sum >= 0
+        sum << [row.username, row.sum]
+      end
     end
     return sum
   end

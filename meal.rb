@@ -355,21 +355,21 @@ post '/location/:id/edit' do
       sql = 'select count(*) FROM ballots as b where strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now")'
     end
     @result = raw_sql sql
-    logger.debug('Generate stats with custom SQL returned %d results.' % @result.length)
+    logger.debug('Generate stats with custom SQL returned %d results.' % @result)
 
     #get actual enabled value, because a change in a running vote is not allowed
     if location.enabled != params[:enabled]
-      if @result.length != 0
+      if @result[0].to_i != 0
         flash[:error] = "Sorry voting for today is already in progress, do your updates tommorrow morning!"
           redirect '/locations'
       end     
     end
 
     location.update(:category => params[:category], :name => params[:name], :description => params[:description], :url => params[:url], :enabled => params[:enabled])
-    flash[:notice] = "Location ##{params[:id]} updated."
+    flash[:notice] = "Location ##{params[:name]} updated."
       redirect '/locations' 
   else
-    flash[:notice] = "Something went wrong with location ##{params[:id]}."
+    flash[:notice] = "Something went wrong with location ##{params[:name]}."
       redirect '/locations'
   end
  

@@ -29,7 +29,10 @@
                 %td
                   #{location.category}
                 %td
-                  #{location.name}
+                  - if location.url != ''
+                    %a{:href => '%s' % location.url} #{location.name}
+                  - else
+                    #{location.name}
                 %td{:style=>'text-align: center'}
                   %input{:name => "#{location.id}", :type => "radio", :value => @option1.value}
                 %td{:style=>'text-align: center'}

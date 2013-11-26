@@ -38,7 +38,10 @@
             -# = %td
               -# = #{cnt}
             %td
-              #{ballot.name}
+              - if ballot.url != ''
+                %a{:href => '%s' % ballot.url} #{ballot.name}
+              - else
+                #{ballot.name}
             %td
               #{ballot.sum}
             - cnt += 1

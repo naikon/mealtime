@@ -9,6 +9,7 @@
       Enable and Disable locations to display or hide them in the voting table. But do this before the first user votes
   </br>
 
+
   .locationbox
   
     %table.table.table-condensed
@@ -21,10 +22,10 @@
           %th
             Name
           %th
-            Description 
+            Remark 
           %th
             URL
-          %th
+          %th{:style => "text-align:center;"}
             Available
           - if logged_in?
             %th
@@ -44,16 +45,20 @@
               #{location.description}
             %td
               %a{:href => '%s' % location.url} #{location.url}
-            %td
+            %td{:style => "text-align:center;"}
               - if location.enabled == "on"
-                yes
+                %i{:class => 'fa fa-check-square-o'}  
               - else
-                no
+                %i{:class => 'fa fa-minus-square-o'} 
             %td
               - if logged_in? 
-                %a{:href => '/location/%d/edit' % location.id } Edit
-                %form.delete{ :action => "/delete", :method => 'post' }
-                  %input{ :type => 'hidden', :name => 'id', :value => "#{location.id}" }
-                  %input{ :type => 'hidden', :name => 'return_to', :value => request.fullpath }
-                  %input.tagpush{ :type => 'submit', :value => 'X' }
+                %a{:href => '/location/%d/edit' % location.id} 
+                  %button{:class => 'btn-xs', :typ => 'button'}
+                    %span{:class => 'fa fa-pencil'}
+                %form.delete{ :action => "/delete", :method => 'post'}
+                  %input{ :type => 'hidden', :name => 'id', :value => "#{location.id}"}
+                  %input{ :type => 'hidden', :name => 'return_to', :value => request.fullpath}
+                  %button.btn-delete{:type => 'submit', :class => 'btn-xs'}
+                    %span{:class => 'fa fa-trash-o'}
+                  /*%input.tagpush{ :type => 'submit', :value => 'x'}*/
             - cnt += 1

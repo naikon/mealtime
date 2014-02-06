@@ -28,7 +28,7 @@
           %th{:style => "text-align:center;"}
             Available
           - if logged_in?
-            %th
+            %th{:style => "text-align:center;"}
               Action
       %tbody
         - cnt = 1
@@ -50,7 +50,7 @@
                 %i{:class => 'fa fa-check-square-o'}  
               - else
                 %i{:class => 'fa fa-minus-square-o'} 
-            %td
+            %td{:style => "text-align:center;"}
               - if logged_in? 
                 %a{:href => '/location/%d/edit' % location.id} 
                   %button{:class => 'btn-xs', :typ => 'button'}

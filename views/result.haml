@@ -20,13 +20,17 @@
           -# = %th
             -# = .content #
           %th.name
-            Name
+            %i{:class => 'fa fa-cutlery'}
+              /*Name*/
           %th.count
-            Sum
+            %i{:class => 'fa fa-sort-amount-desc'}
+              /*Sum*/
           %th.count
-            Pros
+            %i{:class => 'fa fa-heart'}
+              /*&nbsp;Pros*/
           %th.count
-            NoGos
+            %i{:class => 'fa fa-thumbs-down'}
+              /*NoGos*/
           - @users.each do |user|
             %th.name
               #{user.username} 

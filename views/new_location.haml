@@ -9,14 +9,16 @@
         %input{ :type => 'text', :name => 'name', :value => '', :type => "text", :size => 38 }
       %li
         %label{ :for => 'url' } enter a URL of location (optional):
-        %input{ :type => 'text', :name => 'url', :id => 'url', :type => "text", :size => 38 }
+        %input{ :type => 'text', :name => 'url', :id => 'location_url', :type => "text", :size => 38 }
       %li
         %label{ :for => 'name' } description (optional):
         %input{ :type => 'text', :name => 'description', :value => '', :type => "text", :size => 38 }
         .form_info This is optional, it is publicly visible in location overview.
       %li
-        %label{ :for => "location_enabled" } availability:
-        %input{ :id => "location_enabled", :name => "enabled", :type => "checkbox"}
-        
-  %input{ :type => 'submit', :value => 'make it so!', :class => "newb" }
+        %label{ :for => "location_enabled"} availability:
+        %input{ :id => "location_enabled", :name => "enabled", :type => "checkbox", :style => "display: inline"}
+        .form_info Idicates if the location is visible in the voting list.
+      %li{:class => 'last'}    
+        %input{ :type => 'submit', :value => 'make it so!' }
 
+  

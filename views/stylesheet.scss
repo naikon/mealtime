@@ -630,7 +630,7 @@ input[type="submit"] {
 
 form#create {
 
-    input#remote_url {
+    input#location_url {
         background-image: url('/images/url.png');
     }
 
@@ -677,6 +677,10 @@ form.delete {
 }
 
 form.auth {
+    
+    input#location_url {
+        background-image: url('/images/url.png');
+    }
 
     input#user_email {
         background-image: url('images/email.png');
@@ -694,6 +698,10 @@ input#user_username {
 .form_info {
     font-size: 11px;
     font-style: italic;
+}
+
+form#create input#location_url {
+    background-image: url("/images/url.png");
 }
 
 //

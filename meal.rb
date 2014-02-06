@@ -227,6 +227,7 @@ end
 get '/stats.json' do
   logger.debug 'Generating stats json object'
 
+  # global count function for location
   def count_by(id)
     counts = []
     if sqlite_adapter?
@@ -235,7 +236,9 @@ get '/stats.json' do
     res = raw_sql(sql)
     logger.debug('Generate stats with custom SQL returned %d results.' % res.length)
     res.each do |row|
-      counts << [row.name, row.count]
+      if row.count > 0
+        counts << [row.name, row.count]
+      end
     end
     return counts
   end
@@ -244,7 +247,7 @@ get '/stats.json' do
     user_single = count_by(current_user.id)
   end
 
-
+  # for the piechart, user stats with all votepoints
   def user_sum
     sum = []
     if sqlite_adapter?
@@ -253,7 +256,7 @@ get '/stats.json' do
     res = raw_sql(sql)
     logger.debug('Generate stats with custom SQL returned %d results.' % res.length)
     res.each do |row|
-      if row.sum >= 0
+      if row.sum > 0
         sum << [row.username, row.sum]
       end
     end
@@ -261,27 +264,29 @@ get '/stats.json' do
   end
 
 
-  # location statistics
+  # location statistics for all locations
   user_stats = []
     Location.all(:enabled => 'on', :order => [:name]).each do | location |
     name = location.name
     count = raw_sql "SELECT SUM(value) AS sum FROM votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and l.id = #{location.id};"
     logger.debug('Generate stats with custom SQL returned %d results.' % count.length)
-    user_stats << [name, count[0].to_i] if count[0].to_i > 0
+    if count[0].to_i > 0
+      user_stats << [name, count[0].to_i] if count[0].to_i > 0
+    end
   end
 
   if logged_in?
     content_type :json
     {
+      :user_sum => user_sum,
       :user => user_stats,
-      :user_single => user_single,
-      :user_sum => user_sum
+      :user_single => user_single
     }.to_json
   else
     content_type :json
     {
-      :user => user_stats,
-      :user_sum => user_sum
+      :user_sum => user_sum,
+      :user => user_stats
     }.to_json
   end
 end

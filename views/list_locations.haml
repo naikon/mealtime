@@ -47,9 +47,9 @@
               %a{:href => '%s' % location.url} #{location.url}
             %td{:style => "text-align:center;"}
               - if location.enabled == "on"
-                %i{:class => 'fa fa-check-square-o'}  
+                %i{:class => 'fa fa-check-square-o', :style => "color: rgb(92, 184, 92)"}  
               - else
-                %i{:class => 'fa fa-minus-square-o'} 
+                %i{:class => 'fa fa-minus-square-o', :style => "color: rgb(217, 83, 79)"} 
             %td{:style => "text-align:center;"}
               - if logged_in? 
                 %a{:href => '/location/%d/edit' % location.id, :style => "text-decoration: none;"} 

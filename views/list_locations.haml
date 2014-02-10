@@ -52,7 +52,7 @@
                 %i{:class => 'fa fa-minus-square-o'} 
             %td{:style => "text-align:center;"}
               - if logged_in? 
-                %a{:href => '/location/%d/edit' % location.id} 
+                %a{:href => '/location/%d/edit' % location.id, :style => "text-decoration: none;"} 
                   %button{:class => 'btn-xs', :typ => 'button'}
                     %span{:class => 'fa fa-pencil'}
                 %form.delete{ :action => "/delete", :method => 'post'}

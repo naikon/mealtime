@@ -44,7 +44,7 @@ $comp2: adjust-color($base, $hue: 150);
     border: 3px solid $border;
     padding: 3px 5px 5px;
     margin: auto;
-    width: 800px;
+    width: 700px;
 }  
 
 .locationbox {
@@ -55,7 +55,7 @@ $comp2: adjust-color($base, $hue: 150);
     width: 800px;
 }
 
-.voteb {
+.votebutton {
     margin: 0 auto;
     position:relative;
     top:50%;
@@ -86,6 +86,16 @@ $comp2: adjust-color($base, $hue: 150);
 
 .bold {
   font-size: 1.2em;
+}
+
+#votetable.tr {
+  padding: 20px;
+}
+
+#votetable th {
+  font-size: 1.2em;
+  background-color: $boxground;
+  padding: 0 0 0.6em;
 }
 
 

@@ -6,7 +6,7 @@
 - if logged_in?
   .box
     %form{ :action => "/vote", :method => "post", :class => 'votebox' }
-      %table.table.table-condensed
+      %table#votetable.table.table-condensed
         %thead
           %tr
             %th
@@ -45,5 +45,5 @@
                   %input{:name => "#{location.id}", :type => "radio", :value => @option3.value}
                 %td{:style=>'text-align: center'}
                   %input{:name => "#{location.id}", :type => "radio", :value => @option4.value, :checked => "checked"}
-      %input{ :value => "Vote", :type => "submit", :class => "voteb" }	
+      %input{ :value => "Vote", :type => "submit", :class => "votebutton" }	
 

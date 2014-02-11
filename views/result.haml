@@ -9,7 +9,15 @@
       = @title
     %p 
       Displays the final voting from all users sorted by location for today (#{@today})
-  </br>
+
+    - prev = Date.today.prev_day
+    %ul.pager
+      %li.previous
+        %a{:href => 'result/%s/' % prev} &larr; Older
+      %li.next.disabled
+        %a{:href => "#"}Newer &rarr;
+
+  %br
 
   .locationbox
 

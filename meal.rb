@@ -178,7 +178,7 @@ end
 # index
 get '/' do
   @title = "make your choice #{settings.pagetitle}"
-  @locations = Location.all(:enabled => "on", :order => [:name.asc])
+  @locations = Location.all(:enabled => "on", :order => [:category.asc])
   
   @option1 = Option.first(:value => settings.value_want)
   @option2 = Option.first(:value => settings.value_ok)
@@ -512,19 +512,85 @@ get '/result' do
 
     logger.debug('Generate stats with custom SQL returned %d results.' % @values.length)
   end
-  print @results
+  #print @results
   haml :result
 end
+
+#displays the result of a given date
+get '/result/:date/' do | date |
+  if logged_in?
+    if sqlite_adapter?
+      sql = 'select v.value FROM dm_users as u, votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id'
+      sql = sql << " and strftime('%Y-%m-%d', b.created_at) == '#{date}' and u.id = b.dm_user_id and u.id = #{current_user.id} GROUP BY v.location_id order by l.name"
+    end
+
+    @voted = raw_sql sql
+    logger.debug('Generate stats with custom SQL returned %d results.' % @voted.length)
+
+    if Date.today == date
+      if @voted.length == 0
+        flash[:notice] = "Please vote first!"
+          redirect '/'
+      end
+    end
+  end
+
+  #select sum, pros and nogos for location
+  if sqlite_adapter?
+    sql = get_special_values
+  end
+
+  @date = Date.parse params[:date] 
+  @prevdate = @date-1
+  @nextdate = @date+1
+  @ballots = raw_sql sql
+
+  logger.debug('Generate stats with custom SQL returned %d results.' % @ballots.length)
+
+  #select userid for each user
+  if sqlite_adapter?
+    sql = 'SELECT u.id, u.username FROM dm_users as u, votes as v, locations as l, ballots as b where  b.id = v.ballot_id'
+    sql = sql << " and strftime('%Y-%m-%d', b.created_at) == '#{date}' and u.id = b.dm_user_id GROUP BY u.id ORDER BY username asc"
+  end
+
+  @users = raw_sql sql
+  logger.debug('Generate stats with custom SQL returned %d results.' % @users.length)
+
+  if @users.length == 0
+    redirect '/noresult/%s/' % @date 
+  end
+
+  @results = Array.new
+  @users.each do | user |
+
+    #select voting values for each user and location
+    if sqlite_adapter?
+      sql = 'select v.value FROM dm_users as u, votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now")'
+      sql = sql << " and strftime('%d-%m-%Y', b.created_at) == '#{date}' and u.id = b.dm_user_id and u.id = #{user.id} GROUP BY v.location_id order by l.name"
+      sql = get_user_votes_by_location(user.id)
+    end
+
+    @values = raw_sql sql
+    @results.push(@values)
+
+    logger.debug('Generate stats with custom SQL returned %d results.' % @values.length)
+  end 
+  haml :view_date_result
+end
+
+get '/noresult/:date/' do
+  @date = Date.parse params[:date]
+  @prevdate = @date-1
+  @nextdate = @date+1
+  haml :no_result
+end
+
 
 # displays the daily menu
 get '/menu' do
   haml :menu
 end
 
-# shows voting for a given day
-get '/result/:date' do
-  date = params[:date]  
-end
 
 get '/favicon.ico' do
   redirect '/images/favicon.png'

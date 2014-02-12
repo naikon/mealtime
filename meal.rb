@@ -189,8 +189,6 @@ get '/' do
   @option3 = Option.first(:value => settings.value_noway)
   @option4 = Option.first(:value => settings.value_maybe)
 
-  @startprevdate = Date.today - 1
-
   if Ballot.count(:created_at.gte => Date.today, :dm_user_id => current_user.id) > 0
     flash[:notice] = "YOU have already voted, limit for today is reached!"
       redirect '/result'

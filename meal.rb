@@ -162,6 +162,10 @@ helpers do
   def get_special_values
     sql = 'SELECT l.name, location_id, l.url, SUM(value) as sum, sum(case when value >= 2 then 1 else 0 end) as pros, sum(case when value = -1 then 1 else 0 end) as nogos FROM votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now") GROUP BY v.location_id ORDER BY l.name'
   end
+ 
+  def get_special_values_for_date(date)
+     sql = "SELECT l.name, location_id, l.url, SUM(value) as sum, sum(case when value >= 2 then 1 else 0 end) as pros, sum(case when value = -1 then 1 else 0 end) as nogos FROM votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime('%Y-%m-%d', b.created_at) == '#{date}' GROUP BY v.location_id ORDER BY l.name"
+  end
 
   def get_user_votes_by_location(user_id)
     sql = 'select v.value FROM dm_users as u, votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now")'
@@ -184,6 +188,8 @@ get '/' do
   @option2 = Option.first(:value => settings.value_ok)
   @option3 = Option.first(:value => settings.value_noway)
   @option4 = Option.first(:value => settings.value_maybe)
+
+  @startprevdate = Date.today - 1
 
   if Ballot.count(:created_at.gte => Date.today, :dm_user_id => current_user.id) > 0
     flash[:notice] = "YOU have already voted, limit for today is reached!"
@@ -513,6 +519,9 @@ get '/result' do
     logger.debug('Generate stats with custom SQL returned %d results.' % @values.length)
   end
   #print @results
+  @startprevdate = Date.today-1
+  @prevdate = Date.today-1
+  @nextdate = Date.today+1
   haml :result
 end
 
@@ -527,27 +536,46 @@ get '/result/:date/' do | date |
     @voted = raw_sql sql
     logger.debug('Generate stats with custom SQL returned %d results.' % @voted.length)
 
-    if Date.today == date
+    begin
+     Date.parse(params[:date])
+    rescue ArgumentError
+      # handle invalid date
+      flash[:error] = "Wrong date DUDE!"
+      redirect '/result'
+    end
+
+    #if today and not voted -> redirect
+    @date = Date.parse params[:date]
+    if Date.today == @date 
       if @voted.length == 0
         flash[:notice] = "Please vote first!"
-          redirect '/'
+        redirect '/'      
       end
     end
-  end
+  else
+    #if today and not logged in, prevent for spoilers
+    @date = Date.parse params[:date]
+    if Date.today == @date
+      flash[:notice] = "Please vote first!"
+      redirect '/'
+    end
+  end 
 
   #select sum, pros and nogos for location
   if sqlite_adapter?
-    sql = get_special_values
+    sql = get_special_values_for_date(date)
   end
 
-  @date = Date.parse params[:date] 
+  #calculate dates
+  @date = Date.parse params[:date]
+  @startprevdate = Date.today-1
   @prevdate = @date-1
   @nextdate = @date+1
   @ballots = raw_sql sql
 
   logger.debug('Generate stats with custom SQL returned %d results.' % @ballots.length)
 
-  #select userid for each user
+  #select userid for each user that voted
   if sqlite_adapter?
     sql = 'SELECT u.id, u.username FROM dm_users as u, votes as v, locations as l, ballots as b where  b.id = v.ballot_id'
     sql = sql << " and strftime('%Y-%m-%d', b.created_at) == '#{date}' and u.id = b.dm_user_id GROUP BY u.id ORDER BY username asc"
@@ -556,33 +584,29 @@ get '/result/:date/' do | date |
   @users = raw_sql sql
   logger.debug('Generate stats with custom SQL returned %d results.' % @users.length)
 
-  if @users.length == 0
-    redirect '/noresult/%s/' % @date 
-  end
-
   @results = Array.new
   @users.each do | user |
 
     #select voting values for each user and location
     if sqlite_adapter?
-      sql = 'select v.value FROM dm_users as u, votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id and strftime("%d-%m-%Y", b.created_at) == strftime("%d-%m-%Y", "now")'
-      sql = sql << " and strftime('%d-%m-%Y', b.created_at) == '#{date}' and u.id = b.dm_user_id and u.id = #{user.id} GROUP BY v.location_id order by l.name"
-      sql = get_user_votes_by_location(user.id)
+      sql = 'select v.value FROM dm_users as u, votes as v, locations as l, ballots as b where l.id = v.location_id and b.id = v.ballot_id'
+      sql = sql << " and strftime('%Y-%m-%d', b.created_at) == '#{date}' and u.id = b.dm_user_id and u.id = #{user.id} GROUP BY v.location_id order by l.name"
+      #sql = get_user_votes_by_location(user.id)
     end
 
     @values = raw_sql sql
     @results.push(@values)
 
     logger.debug('Generate stats with custom SQL returned %d results.' % @values.length)
-  end 
-  haml :view_date_result
-end
+  end
 
-get '/noresult/:date/' do
-  @date = Date.parse params[:date]
-  @prevdate = @date-1
-  @nextdate = @date+1
-  haml :no_result
+  #if votes available or not
+  if @users.length == 0
+    haml :no_result
+  else 
+    haml :view_date_result
+  end
+
 end
 
 
@@ -631,29 +655,29 @@ end
 
 
 # create initial values
-if Location.count(:name => 'Steindl') <= 0
-  Location.create(:name => 'Steindl', :category => 'Restaurant', :url => 'http://www.restaurant-steindl.at/', :enabled => "on" )
-  Location.create(:name => 'Mill', :category => 'Restaurant', :url => 'http://www.mill32.at/', :enabled => "on")
-  Location.create(:name => 'Merkur', :category => 'Restaurant', :url => 'http://www.merkur.at', :enabled => "on")
-  Location.create(:name => 'Vapiano', :category => 'Restaurant', :url => 'http://www.vapiano.at/', :enabled => "on")
-  Location.create(:name => 'Yummy', :category => 'Chinese', :url => '', :enabled => "on") 
-  Location.create(:name => 'Pizzeria', :category => 'Restaurant', :url => '', :enabled => "on")
-  Location.create(:name => 'Mirchi', :category => 'Indian', :url => '', :enabled => "on") 
-  Location.create(:name => 'Grieche', :category => 'Restaurant', :url => '', :enabled => "on")
-  Location.create(:name => 'Cocos', :category => 'Chinese', :url => '', :enabled => "on")
-  Location.create(:name => 'McDonalds', :category => 'Fast Food', :url => 'http://www.mcdonalds.at', :enabled => "on")
-  Location.create(:name => 'Macas', :category => 'Fast Food', :url => '', :enabled => "on")
-  Location.create(:name => 'LaDonnaInes', :category => 'Restaurant', :url => '', :enabled => "on")
-  Location.create(:name => 'KFC', :category => 'Fast Food', :url => 'http://www.kfc.co.at/', :enabled => "")
-  Location.create(:name => 'BurgerKing', :category => 'Fast Food', :url => 'http://www.burgerking.at', :enabled => "")
-  Location.create(:name => 'Dots', :category => 'Restaurant', :url => '', :enabled => "")
-  Location.create(:name => 'Monosushi', :category => 'Chinese', :url => '', :enabled => "")
+#if Location.count(:name => 'Steindl') <= 0
+#  Location.create(:name => 'Steindl', :category => 'Restaurant', :url => 'http://www.restaurant-steindl.at/', :enabled => "on" )
+#  Location.create(:name => 'Mill', :category => 'Restaurant', :url => 'http://www.mill32.at/', :enabled => "on")
+#  Location.create(:name => 'Merkur', :category => 'Restaurant', :url => 'http://www.merkur.at', :enabled => "on")
+#  Location.create(:name => 'Vapiano', :category => 'Restaurant', :url => 'http://www.vapiano.at/', :enabled => "on")
+#  Location.create(:name => 'Yummy', :category => 'Chinese', :url => '', :enabled => "on") 
+#  Location.create(:name => 'Pizzeria', :category => 'Restaurant', :url => '', :enabled => "on")
+#  Location.create(:name => 'Mirchi', :category => 'Indian', :url => '', :enabled => "on") 
+#  Location.create(:name => 'Grieche', :category => 'Restaurant', :url => '', :enabled => "on")
+#  Location.create(:name => 'Cocos', :category => 'Chinese', :url => '', :enabled => "on")
+#  Location.create(:name => 'McDonalds', :category => 'Fast Food', :url => 'http://www.mcdonalds.at', :enabled => "on")
+#  Location.create(:name => 'Macas', :category => 'Fast Food', :url => '', :enabled => "on")
+#  Location.create(:name => 'LaDonnaInes', :category => 'Restaurant', :url => '', :enabled => "on")
+#  Location.create(:name => 'KFC', :category => 'Fast Food', :url => 'http://www.kfc.co.at/', :enabled => "")
+#  Location.create(:name => 'BurgerKing', :category => 'Fast Food', :url => 'http://www.burgerking.at', :enabled => "")
+#  Location.create(:name => 'Dots', :category => 'Restaurant', :url => '', :enabled => "")
+#  Location.create(:name => 'Monosushi', :category => 'Chinese', :url => '', :enabled => "")
 
 
-  Option.create(:name => 'Want', :value => settings.value_want)
-  Option.create(:name => 'OK', :value => settings.value_ok)
-  Option.create(:name => 'No Way', :value => settings.value_noway)
-  Option.create(:name => 'Maybe', :value => settings.value_maybe)
-end
+#  Option.create(:name => 'Want', :value => settings.value_want)
+#  Option.create(:name => 'OK', :value => settings.value_ok)
+#  Option.create(:name => 'No Way', :value => settings.value_noway)
+#  Option.create(:name => 'Maybe', :value => settings.value_maybe)
+#end
  
 

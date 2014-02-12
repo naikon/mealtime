@@ -1,6 +1,11 @@
 %nav
   - if logged_in?
     %a{:href => '/result'} Result
+    &#124;
+    %a{:href => '/result/%s/' % @startprevdate} Last Result
+    %br
+  - else
+    %a{:href => '/result/%s/' % @startprevdate} Last Result
     %br
   %a{:href => '/new'} Add
   &#124;

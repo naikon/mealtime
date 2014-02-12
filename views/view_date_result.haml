@@ -1,0 +1,76 @@
+#content
+  .textbox
+    %h2
+      = @title
+    %p 
+      Displays the final voting from all users sorted by location for #{@date}
+
+    %ul.pager
+      %li.previous
+        %a{:href => '/result/%s/' % @prevdate} &larr; Older
+      - if Date.today == @date
+        %li.next.disabled
+          %a{:href => '#'}Newer &rarr;
+      - else
+        %li.next
+          %a{:href => '/result/%s/' % @nextdate}Newer &rarr;
+
+
+  %br
+
+  .locationbox
+
+ 
+    %table#resulttable.table.table-condensed.tablesorter
+      %thead
+        %tr
+          -# = %th
+            -# = .content #
+          %th.name
+            %i{:class => 'fa fa-cutlery'}
+              /*Name*/
+          %th.count
+            %i{:class => 'fa fa-sort-amount-desc'}
+              /*Sum*/
+          %th.count
+            %i{:class => 'fa fa-heart'}
+              /*&nbsp;Pros*/
+          %th.count
+            %i{:class => 'fa fa-thumbs-down'}
+              /*NoGos*/
+          - @users.each do |user|
+            %th.name
+              #{user.username} 
+      %tbody
+        - cnt = 1
+        - @ballots.each do |ballot|
+          - start = 0
+          %tr
+            -# = %td
+              -# = #{cnt}
+            %td
+              - if ballot.url != ''
+                %a{:href => '%s' % ballot.url} #{ballot.name}
+              - else
+                #{ballot.name}
+            %td
+              #{ballot.sum}
+            - cnt += 1
+            - if ballot.pros >= 1
+              %td 
+                %span.label.label-success
+                  #{ballot.pros}
+            - else
+              %td
+                #{ballot.pros}
+            - if ballot.nogos >= 1
+              %td
+                %span.label.label-important
+                  #{ballot.nogos}
+            - else
+              %td
+                #{ballot.nogos}
+            - @users.each do |user| 
+              %td
+                #{@results[start][cnt-2]}
+                -start += 1

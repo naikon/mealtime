@@ -1,0 +1,17 @@
+#content
+  .textbox
+    %h2
+      = @title
+    %p 
+      No votes found for (#{@date})
+
+    %ul.pager
+      %li.previous
+        %a{:href => '/result/%s/' % @prevdate} &larr; Older
+      - if Date.today == @date
+        %li.next.disabled
+          %a{:href => '#'}Newer &rarr;
+      - else
+        %li.next
+          %a{:href => '/result/%s/' % @nextdate}Newer &rarr;
+

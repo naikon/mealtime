@@ -172,6 +172,10 @@ helpers do
     sql = sql << "and u.id = b.dm_user_id and u.id = #{user_id} GROUP BY v.location_id order by l.name"
   end
 
+  def get_most_voted_for_user(user_id)
+    sql = "select l.id, l.name, l.description, l.category, l.url, sum(v.value) AS count from votes as v, locations l, ballots as b, dm_users as u where v.ballot_id = b.id and l.id = v.location_id and u.id = b.dm_user_id and u.id = #{user_id} group by l.name order by count desc"
+  end
+
 end
 
 
@@ -182,7 +186,8 @@ end
 # index
 get '/' do
   @title = "make your choice #{settings.pagetitle}"
-  @locations = Location.all(:enabled => "on", :order => [:category.asc])
+  #@locations = Location.all(:enabled => "on", :order => [:category.asc])
+  @locations = raw_sql get_most_voted_for_user(current_user.id)
   
   @option1 = Option.first(:value => settings.value_want)
   @option2 = Option.first(:value => settings.value_ok)

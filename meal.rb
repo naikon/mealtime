@@ -186,8 +186,8 @@ end
 # index
 get '/' do
   @title = "make your choice #{settings.pagetitle}"
-  #@locations = Location.all(:enabled => "on", :order => [:category.asc])
-  @locations = raw_sql get_most_voted_for_user(current_user.id)
+  @locations = Location.all(:enabled => "on", :order => [:category.asc])
+  #@locations = raw_sql get_most_voted_for_user(current_user.id)
   
   @option1 = Option.first(:value => settings.value_want)
   @option2 = Option.first(:value => settings.value_ok)

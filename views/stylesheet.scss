@@ -901,4 +901,10 @@ footer {
     width: 194px;
 }
 
-
+td div {
+   width: 150px;
+   white-space: nowrap;
+   overflow: hidden;         
+   text-overflow: ellipsis;
+   -o-text-overflow: ellipsis;  // for Opera 9 & 10
+}

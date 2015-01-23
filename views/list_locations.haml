@@ -22,7 +22,7 @@
           %th
             Name
           %th
-            Remark 
+            Description 
           %th
             URL
           %th{:style => "text-align:center;"}
@@ -44,7 +44,8 @@
             %td
               #{location.description}
             %td
-              %a{:href => '%s' % location.url} #{location.url}
+              %div
+                %a{:href => '%s' % location.url} #{location.url}
             %td{:style => "text-align:center;"}
               - if location.enabled == "on"
                 %i{:class => 'fa fa-check-square-o', :style => "color: rgb(92, 184, 92)"}  
